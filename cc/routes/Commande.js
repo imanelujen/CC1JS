@@ -5,8 +5,15 @@ const LigneCmd = require('../models/ligneCommande'); // Corrected
 
 router.get('/', async (req, res) => {
   try {
-    const commandes = await Commande.find().populate('client'); // Changed Client to client (lowercase)
-    res.json(commandes);
+    const commandes = await Commande.find().populate('client');
+    // Fetch lignecmds for each commande
+    const commandesWithLignes = await Promise.all(
+      commandes.map(async (commande) => {
+        const lignes = await LigneCmd.find({ commande: commande._id }).populate('produit');
+        return { ...commande.toObject(), lignes };
+      })
+    );
+    res.json(commandesWithLignes);
   } catch (error) {
     console.error('Error fetching commandes:', error);
     res.status(500).json({ error: error.message });
