@@ -1,7 +1,8 @@
+// routes/commandes.js
 const express = require('express');
 const router = express.Router();
 const Commande = require('../models/Commande');
-const LigneCmd = require('../models/ligneCommande'); // Corrected
+const LigneCmd = require('../models/ligneCommande');
 
 router.get('/', async (req, res) => {
   try {
@@ -30,12 +31,15 @@ router.post('/', async (req, res) => {
       const ligneCmd = new LigneCmd({
         qte: ligne.qte,
         commande: commande._id,
-        produit: ligne.produit
+        produit: ligne.produit,
       });
       await ligneCmd.save();
     }
 
-    res.json(commande);
+    const populatedCommande = await Commande.findById(commande._id)
+      .populate('client');
+    const populatedLignes = await LigneCmd.find({ commande: commande._id }).populate('produit');
+    res.json({ ...populatedCommande.toObject(), lignes: populatedLignes });
   } catch (error) {
     console.error('Error creating commande:', error);
     res.status(500).json({ error: error.message });

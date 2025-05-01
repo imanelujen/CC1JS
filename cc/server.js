@@ -14,6 +14,7 @@ mongoose.connect('mongodb://localhost/cc', {
 app.use('/api/clients', require('./routes/Client'));
 app.use('/api/produits', require('./routes/produits'));
 app.use('/api/commandes', require('./routes/Commande'));
+app.use('/api/lignes', require('./routes/ligneCommande'));
 
 app.listen(3000, () => {
   console.log('Server running on port 3000');
