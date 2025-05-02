@@ -19,6 +19,9 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { qte } = req.body;
+    if (typeof qte !== 'number' || qte < 0) {
+      return res.status(400).json({ error: 'Invalid quantity value' });
+    }
     const updatedLigneCmd = await LigneCmd.findByIdAndUpdate(
       id,
       { qte },
